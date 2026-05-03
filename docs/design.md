@@ -42,7 +42,8 @@ Scalable-System-Design-Implementation/
 │
 ├── docs/
 │   ├── setup.md                    # End-to-end runbook (Docker, replication checks, pgAdmin)
-│   └── design.md                   # This document — layout and rationale
+│   ├── config.md                   # Nginx, DB, connection strings
+│   └── design.md                   # This document — layout and architecture
 │
 ├── infra/
 │   └── nginx/
