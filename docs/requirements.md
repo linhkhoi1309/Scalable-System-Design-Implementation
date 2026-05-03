@@ -1,59 +1,80 @@
-"1. Project Overview
-The objective of this project is to build a functional, scalable backend infrastructure from scratch. You will move beyond simple application development to focus on how traffic is distributed and how data remains consistent across multiple nodes. You are required to set up a load-balanced environment with a replicated database architecture.
+# Project requirements
 
-2. System Architecture Requirements
-Your implementation must consist of the following main components:
+Specification for the scalable backend infrastructure assignment: load balancing, replication, and a minimal REST API.
 
-Load Balancer (Nginx or HAProxy): Acts as the single entry point. It must distribute incoming traffic to the backend nodes using a Round Robin or Least Connections algorithm.
+---
 
-Application Layer (2x API Nodes): Two identical instances of a REST API (Node.js, Python, Go, etc.) running on separate ports or containers.
+## 1. Project overview
 
-Database Layer (Master-Slave Replication):
+The objective is to build a **functional, scalable backend infrastructure** from scratch, with emphasis on **how traffic is distributed** and **how data stays consistent across multiple nodes**—not only on application code.
 
-Master Node: Handles all Write / Read operations (INSERT, UPDATE, DELETE, GET).
+You must set up a **load-balanced environment** with a **replicated database architecture**.
 
-Slave Node (Read Replica): Synchronizes data from the Master and handles Read operations (GET).
+---
 
-3. Functional Requirements (The API)
-The API logic is intentionally kept simple to focus on the infrastructure setup. It must include:
+## 2. System architecture
 
-POST /products:
+The implementation **must** include these main components.
 
-Action: Validates and saves product data (Name, Price) into the Master Database.
+### Load balancer (Nginx or HAProxy)
 
-Response: Success message and the data created.
+- Acts as the **single entry point** for HTTP traffic.
+- Must distribute incoming requests to backend nodes using **Round Robin** or **Least Connections**.
 
-GET /products:
+### Application layer (two API nodes)
 
-Action: Fetches the list of products from the Slave Database.
+- **Two identical instances** of a REST API (technology choice is open: Node.js, Python, Go, .NET, etc.).
+- Runs on **separate ports or containers** (isolated processes).
 
-Response: List of products + Server Metadata (e.g., "processed_by": "Node_A"). This is crucial to prove the Load Balancer is working.
+### Database layer (master–slave replication)
 
-4. Technical Implementation Steps (Step-by-Step)
-You must document and record each of the following phases:
+| Role | Responsibility |
+|------|----------------|
+| **Master** | Handles **writes** and may handle reads (`INSERT`, `UPDATE`, `DELETE`; reads as specified by your design). |
+| **Slave (read replica)** | **Synchronizes** data from the master and serves **read** operations (e.g. `GET`) per assignment rules. |
 
-Phase 1: Database Replication Setup
-Configure the Master node.
+---
 
-Configure the Slave node.
+## 3. Functional requirements (API)
 
-Verify synchronization by inserting data into Master and checking the Slave.
+API behavior is intentionally simple so effort focuses on **infrastructure**.
 
-Phase 2: API Development & Read/Write Splitting
-Implement the API logic.
+### `POST /products`
 
-Critical: Configure the app to use two different connection strings: one for Writes (Master IP) and one for Reads (Slave IP).
+- **Action:** Validate and persist product data (**Name**, **Price**) to the **master** database.
+- **Response:** Success indication and the **created** resource (or equivalent success payload).
 
-Phase 3: Infrastructure & Load Balancing
-Deploy two instances of the API.
+### `GET /products`
 
-Configure the Load Balancer to proxy requests to both API nodes.
+- **Action:** Load the list of products from the **slave** database.
+- **Response:** Product list plus **server metadata** (e.g. `"processed_by": "Node_A"`) so you can **prove the load balancer** is hitting different backends.
 
-Ensure the Load Balancer performs health checks (optional but recommended).
+---
 
-Phase 4: Verification & Stress Test
-Use curl or Postman to send multiple requests.
+## 4. Technical implementation phases
 
-Verify that the "Server ID" in the response toggles between Node 1 and Node 2.
+Document and record work for **each** phase below.
 
-Verify that data written to the Master is visible when querying the Slave.
+### Phase 1 — Database replication
+
+1. Configure the **master** node.
+2. Configure the **slave** node.
+3. **Verify synchronization:** insert on the master and confirm data appears on the slave.
+
+### Phase 2 — API and read/write split
+
+1. Implement the API logic (`POST` / `GET` as above).
+2. **Critical:** Use **two connection strings** — one for **writes** (master address) and one for **reads** (slave address).
+
+### Phase 3 — Infrastructure and load balancing
+
+1. Run **two** API instances.
+2. Configure the load balancer to **proxy** to both API nodes.
+3. **Optional but recommended:** health checks on backends.
+
+### Phase 4 — Verification and stress test
+
+1. Use **curl**, **Postman**, or similar to send **many** requests.
+2. Confirm the **server ID** (or equivalent metadata) **varies** across responses (e.g. Node 1 vs Node 2).
+3. Confirm data **written on the master** is **visible when reading via the slave** (replication path).
+
