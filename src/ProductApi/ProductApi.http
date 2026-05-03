@@ -1,0 +1,20 @@
+@baseUrl = http://localhost:5080
+@contentType = application/json
+
+### Health check
+GET {{baseUrl}}/health
+Accept: application/json
+
+### Create product
+POST {{baseUrl}}/products
+Content-Type: {{contentType}}
+Accept: application/json
+
+{
+  "name": "Keyboard",
+  "price": 99.99
+}
+
+### List products
+GET {{baseUrl}}/products
+Accept: application/json
